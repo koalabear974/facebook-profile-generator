@@ -7,8 +7,7 @@
     "start": "node server.js"
   },
   "repository": "https://github.com/koalabear974/facebook-profile-generator",
-  "keywords": [
-  ],
+  "keywords": [],
   "author": "Adrien Robert",
   "license": "MIT",
   "homepage": "https://github.com/koalabear974/facebook-profile-generator",
@@ -29,11 +28,12 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.0.1",
-    "babel-loader": "^7.0.0",
+    "jquery": "^3.3.1",
     "prop-types": "^15.6.2",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
-    "react-scripts": "1.0.14"
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-dropzone": "^5.0.1",
+    "react-image-onload": "^1.0.1"
   },
   "main": "server.js"
 }
