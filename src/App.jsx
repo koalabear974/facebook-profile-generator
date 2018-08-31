@@ -30,7 +30,9 @@ class App extends Component {
     }
 
     onReset() {
-        console.log("RESET");
+        this.setState({
+            files: [],
+        });
     }
 
     componentDidUpdate( prevProps,  prevState) {
