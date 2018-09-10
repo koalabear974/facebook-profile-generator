@@ -21,6 +21,8 @@ class ImageManager extends Component {
 
         this.proportions = defaultValues.proportions;
 
+        this.fader = React.createRef();
+        this.imageContainer = React.createRef();
         this.bigOverlay = React.createRef();
         this.smallOverlay = React.createRef();
         this.image = React.createRef();
@@ -30,6 +32,7 @@ class ImageManager extends Component {
         this.onApplyClick = this.onApplyClick.bind(this);
         this.onImageLoad = this.onImageLoad.bind(this);
         this.updateCalculation = this.updateCalculation.bind(this);
+        this.setOverlayStyle = this.setOverlayStyle.bind(this);
     };
 
     onResetClick(e) {
@@ -80,16 +83,16 @@ class ImageManager extends Component {
                 this.proportions
             );
 
-            this.bigOverlay.current.style.width = overlayProportions.visible.bigPicture.width + "px";
-            this.bigOverlay.current.style.height = overlayProportions.visible.bigPicture.height + "px";
+            this.setOverlayStyle(overlayProportions, imageProportions);
 
-            this.smallOverlay.current.style.width = overlayProportions.visible.smallPicture.width + "px";
-            this.smallOverlay.current.style.height = overlayProportions.visible.smallPicture.width + "px";
-
-            this.smallOverlay.current.style.left = (overlayProportions.visible.offset.width - 3) + "px";
-            this.smallOverlay.current.style.top = (overlayProportions.visible.offset.height- 3) + "px";
-
-            // TODO Verify that image is big enough of overlays
+            let minHeight = overlayProportions.natural.offset.top + overlayProportions.natural.smallPicture.height;
+            if (imageProportions.naturalHeight < minHeight) {
+                this.setState({
+                    invalid: true,
+                    calculationRun: false,
+                    imageProportions: imageProportions,
+                });
+            }
 
             this.setState({
                 calculationRun: true,
@@ -97,6 +100,25 @@ class ImageManager extends Component {
                 overlayProportions: overlayProportions,
             });
         }
+    }
+
+    setOverlayStyle(propotions, imageProportions) {
+        this.bigOverlay.current.style.width = propotions.visible.bigPicture.width + "px";
+        this.bigOverlay.current.style.height = propotions.visible.bigPicture.height + "px";
+
+        this.smallOverlay.current.style.width = propotions.visible.smallPicture.width + "px";
+        this.smallOverlay.current.style.height = propotions.visible.smallPicture.width + "px";
+
+        let borderWidth = getComputedStyle(this.smallOverlay.current).borderWidth;
+        borderWidth = borderWidth.substr(0, borderWidth.length - 2);
+        this.smallOverlay.current.style.left = (propotions.visible.offset.left - borderWidth) + "px";
+        this.smallOverlay.current.style.top = (propotions.visible.offset.top - borderWidth) + "px";
+
+        this.smallOverlay.current.style.backgroundImage = "url('" + this.props.image.preview +"')";
+        this.smallOverlay.current.style.backgroundPosition = "-" + propotions.visible.offset.left + "px -"
+            + propotions.visible.offset.top + "px";
+        this.smallOverlay.current.style.backgroundSize = imageProportions.width + "px "
+            + imageProportions.height + "px";
     }
 
     componentDidMount() {
@@ -164,6 +186,7 @@ class ImageManager extends Component {
 ImageManager.propTypes = {
     image: PropTypes.object.isRequired,
     onResetClick: PropTypes.func.isRequired,
+    onApplyClick: PropTypes.func.isRequired,
 };
 
 export default ImageManager;
