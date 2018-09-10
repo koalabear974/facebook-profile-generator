@@ -35,6 +35,7 @@ class ImageManager extends Component {
         this.updateCalculation = this.updateCalculation.bind(this);
         this.setOverlayStyle = this.setOverlayStyle.bind(this);
         this.processCropp = this.processCropp.bind(this);
+        this.onImageMouseDown = this.onImageMouseDown.bind(this);
     };
 
     onResetClick(e) {
@@ -206,8 +207,43 @@ class ImageManager extends Component {
         });
     }
 
+    onImageMouseDown(event) {
+        let root = this;
+        let mouseStart = event.pageY;
+        let imagePosition = Math.abs(parseInt(root.image.current.image.style.marginTop || 0));
+        let overlayPosition = Math.abs(parseInt(root.smallOverlay.current.style.backgroundPositionY));
+
+        moveImage(event.pageY);
+        function moveImage(pageY) {
+            let imageOffset = (imagePosition + (mouseStart - pageY));
+            let overlayOffset = (overlayPosition + (mouseStart - pageY));
+            overlayOffset = overlayOffset > root.state.overlayProportions.visible.offset.top ?
+                overlayOffset :
+                root.state.overlayProportions.visible.offset.top;
+
+            root.image.current.image.style.marginTop = "-" + (imageOffset > 0 ? imageOffset : 0) + "px";
+            root.smallOverlay.current.style.backgroundPositionY = "-" + overlayOffset + "px";
+
+            // TODO: setState with offset to cut properly!
+        }
+
+        function onMouseMove(event) {
+            moveImage(event.pageY);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+
+        document.onmouseup = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+        };
+    }
+
     componentDidMount() {
         window.addEventListener("resize", this.updateCalculation);
+        this.imageContainer.current.ondragstart = function() {
+            return false;
+        };
     }
 
     componentWillUnmount() {
@@ -222,6 +258,7 @@ class ImageManager extends Component {
                 <div
                     className="imageManager_imageContainer imageContainer"
                     ref={this.imageContainer}
+                    onMouseDown={this.onImageMouseDown}
                 >
                     <div
                         className={"imageContainer_bigOverlay " + (this.state.calculationRun ? "" : "hidden")}
