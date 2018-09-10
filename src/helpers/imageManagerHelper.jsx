@@ -29,10 +29,10 @@ class imageManagerHelper {
         let naturalOffsetHeight = naturalBigOverlayHeight - (proportions.big.offset.height * naturalRatio);
 
 
-        overlayProportions.visible.offset.width = offsetWidth;
-        overlayProportions.visible.offset.height = offsetHeight;
-        overlayProportions.natural.offset.width = naturalOffsetWidth;
-        overlayProportions.natural.offset.height = naturalOffsetHeight;
+        overlayProportions.visible.offset.left = offsetWidth;
+        overlayProportions.visible.offset.top = offsetHeight;
+        overlayProportions.natural.offset.left = naturalOffsetWidth;
+        overlayProportions.natural.offset.top = naturalOffsetHeight;
 
         return overlayProportions;
     }
@@ -56,8 +56,8 @@ class imageManagerHelper {
                         "height": 0,
                     },
                     "offset": {
-                        "width": 0,
-                        "height": 0,
+                        "left": 0,
+                        "top": 0,
                     },
                 },
                 "visible": {
@@ -70,8 +70,8 @@ class imageManagerHelper {
                         "height": 0,
                     },
                     "offset": {
-                        "width": 0,
-                        "height": 0,
+                        "left": 0,
+                        "top": 0,
                     },
                 },
             },
@@ -121,6 +121,7 @@ class imageManagerHelper {
             }
         };
     }
+
 }
 
 export default new imageManagerHelper();
