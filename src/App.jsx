@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ReactDropzone from 'react-dropzone';
 import ImageManager from './components/ImageManager.jsx';
+import ImageDisplayer from "./components/ImageDisplayer.jsx";
 
 class App extends Component {
     constructor(props) {
@@ -8,11 +9,13 @@ class App extends Component {
 
         this.state = {
             files: [],
+            cropped: false,
         };
 
         this.onPreviewDrop = this.onPreviewDrop.bind(this);
         this.getFile = this.getFile.bind(this);
         this.onReset = this.onReset.bind(this);
+        this.onApply = this.onApply.bind(this);
     };
 
     onPreviewDrop(files) {
@@ -32,19 +35,24 @@ class App extends Component {
     onReset() {
         this.setState({
             files: [],
+            cropped: false,
         });
     }
 
-    componentDidUpdate( prevProps,  prevState) {
+    onApply(bigBlob, smallBlob) {
+        this.setState({
+            files: [bigBlob, smallBlob],
+            cropped: true,
+        });
     }
 
     render() {
         let currentFile = this.getFile();
         return (
             <div className='mainContainer'>
-                <h1>Profile generator</h1>
+                <h1 className='mainContainer_titleBar'>Profile generator</h1>
                 {
-                    !currentFile &&
+                    (!currentFile && !this.state.cropped) &&
                     <ReactDropzone
                         className='mainContainer_dropZone dropZone'
                         onDrop={this.onPreviewDrop}
@@ -54,9 +62,18 @@ class App extends Component {
                 }
 
                 {
-                    currentFile &&
+                    (currentFile && !this.state.cropped) &&
                     <ImageManager
                         image={currentFile}
+                        onResetClick={this.onReset}
+                        onApplyClick={this.onApply}
+                    />
+                }
+
+                {
+                    this.state.cropped &&
+                    <ImageDisplayer
+                        images={this.state.files}
                         onResetClick={this.onReset}
                     />
                 }

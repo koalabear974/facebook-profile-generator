@@ -10,6 +10,20 @@
   align-items: center;
   font-family: Helvetica, sans-serif;
 
+  &_titleBar {
+    background-color: #4267b2;
+    border-bottom: 1px solid #29487d;
+    color: white;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    min-height: 50px;
+    margin: 0 0 1em;
+    font-size: 30px;
+    z-index: 10;
+  }
 }
 
 .dropZone {
@@ -81,6 +95,28 @@
     border: 3px solid black;
     width: 200px;
     height: 100px;
+  }
+
+.imageDisplayer {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  flex-flow: column;
+  align-items: center;
+  max-width: 100vw;
+  justify-content: space-around;
+
+  &_imageContainer {
+    flex: 0 0 200px;
+    min-width: 200px;
+    position: relative;
+    overflow: scroll;
+  }
+
+  &_image {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 }
 
