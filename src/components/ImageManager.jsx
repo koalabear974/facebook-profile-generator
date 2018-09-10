@@ -170,6 +170,9 @@ class ImageManager extends Component {
 
     croppImage(proportions, offset = null) {
         let imageProp = this.state.imageProportions;
+        let imageOffset = Math.abs(parseInt(this.image.current.image.style.marginTop || 0));
+        imageOffset = (imageOffset * imageProp.naturalHeight)/ imageProp.height;
+
         return new Promise((resolve) => {
             let cropper = new Cropper(this.image.current.image, {
                 viewMode: 1,
@@ -193,7 +196,7 @@ class ImageManager extends Component {
                     });
                     cropper.setCropBoxData({
                         left: offset ? offset.left : 0,
-                        top: offset ? offset.top : 0,
+                        top: imageOffset + (offset ? offset.top : 0),
                         height: proportions.height,
                         width: proportions.width,
                     });
@@ -223,8 +226,6 @@ class ImageManager extends Component {
 
             root.image.current.image.style.marginTop = "-" + (imageOffset > 0 ? imageOffset : 0) + "px";
             root.smallOverlay.current.style.backgroundPositionY = "-" + overlayOffset + "px";
-
-            // TODO: setState with offset to cut properly!
         }
 
         function onMouseMove(event) {

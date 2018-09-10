@@ -42,7 +42,7 @@ class ImageDisplayer extends Component {
                 </div>
 
                 <div className='imageDisplayer_imageContainer'>
-                    <a download="smallPicture.jpg" href={this.props.images[0]} title="bigPicture">
+                    <a download="smallPicture.jpg" href={this.props.images[1]} title="bigPicture">
                         <ImageOnLoad
                             ref={this.image}
                             className={'imageDisplayer_image ' + (this.state.imageLoaded ? '' : 'hidden')}
