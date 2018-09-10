@@ -28,9 +28,11 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.0.1",
+    "cropperjs": "^1.4.1",
     "jquery": "^3.3.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
+    "react-addons-css-transition-group": "^15.6.2",
     "react-dom": "^16.4.2",
     "react-dropzone": "^5.0.1",
     "react-image-onload": "^1.0.1"
