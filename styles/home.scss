@@ -54,10 +54,32 @@
   flex-wrap: wrap;
   flex-flow: column;
   align-items: center;
+  max-width: 100vw;
 
   &_imageContainer {
     flex: 1 1 100%;
   }
+
+  &_fader {
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: black;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    transition: opacity 500ms ease-in;
+
+    &--visible {
+      display: block;
+    }
+    &--active {
+      opacity: 1;
+    }
+  }
+
 
   &_buttonContainer {
     display: flex;
@@ -70,6 +92,10 @@
   &_image {
     width: 100%;
     height: auto;
+  }
+
+  &_image--cropping {
+    width: inherit;
   }
 
   Button {
@@ -108,6 +134,10 @@
     border-width: 4px; // To be able to fetch it in javascript
     background-repeat: no-repeat;
   }
+}
+
+.cropper-container {
+  display: none;
 }
 
 .imageDisplayer {

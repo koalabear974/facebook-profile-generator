@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import Cropper from 'cropperjs';
 import PropTypes from 'prop-types';
 import ImageOnLoad from 'react-image-onload';
 import Button from '@material-ui/core/Button';
@@ -33,6 +34,7 @@ class ImageManager extends Component {
         this.onImageLoad = this.onImageLoad.bind(this);
         this.updateCalculation = this.updateCalculation.bind(this);
         this.setOverlayStyle = this.setOverlayStyle.bind(this);
+        this.processCropp = this.processCropp.bind(this);
     };
 
     onResetClick(e) {
@@ -47,6 +49,8 @@ class ImageManager extends Component {
         this.setState({
             imageLoaded: true,
             calculationRun: false,
+            smallBlob: null,
+            bigBlob: null,
         });
 
         setTimeout(() => {
@@ -55,9 +59,51 @@ class ImageManager extends Component {
     }
 
     onApplyClick(e) {
+        this.fader.current.classList.add('imageManager_fader--visible');
+        setTimeout(() => {
+            this.fader.current.classList.add('imageManager_fader--active');
+        }, 100);
+
+        this.fader.current.addEventListener(
+            'webkitTransitionEnd',
+            () => {
+                console.log("Finished transition!");
+                this.image.current.image.classList.add('imageManager_image--cropping');
+
+                this.processCropp();
+            },
+            false
+        );
+
+    }
+
+    processCropp() {
+        let bigBlob, smallBlob;
+        let root = this;
+        let overlayProp = this.state.overlayProportions;
+        bigBlob = this.croppImage(
+            overlayProp.natural.smallPicture,
+            overlayProp.natural.offset
+        );
+        bigBlob.then((blob) => {
+            root.smallBlob = blob;
+
+            smallBlob = this.croppImage(overlayProp.natural.bigPicture);
+
+            smallBlob.then((blob) => {
+                root.bigBlob = blob;
+                this.setState({
+                    bigBlob: root.bigBlob,
+                    smallBlob: root.smallBlob
+                });
+            });
+        });
     }
 
     componentDidUpdate(prevProps) {
+        if (this.state.bigBlob && this.state.smallBlob) {
+            this.props.onApplyClick(this.state.bigBlob, this.state.smallBlob);
+        }
     }
 
     updateCalculation() {
@@ -121,6 +167,45 @@ class ImageManager extends Component {
             + imageProportions.height + "px";
     }
 
+    croppImage(proportions, offset = null) {
+        let imageProp = this.state.imageProportions;
+        return new Promise((resolve) => {
+            let cropper = new Cropper(this.image.current.image, {
+                viewMode: 1,
+                autoCropArea: 0,
+                strict: false,
+                guides: false,
+                highlight: false,
+                dragCrop: false,
+                cropBoxMovable: false,
+                cropBoxResizable: false,
+                minContainerHeight: imageProp.naturalHeight,
+                minContainerWidth: imageProp.naturalWidth,
+                minCanvasHeight: imageProp.naturalHeight,
+                minCanvasWidth: imageProp.naturalWidth,
+                ready: function () {
+                    cropper.setCanvasData({
+                        left: 0,
+                        top: 0,
+                        height: imageProp.naturalHeight,
+                        width: imageProp.naturalWidth,
+                    });
+                    cropper.setCropBoxData({
+                        left: offset ? offset.left : 0,
+                        top: offset ? offset.top : 0,
+                        height: proportions.height,
+                        width: proportions.width,
+                    });
+                    console.log(cropper.getCropBoxData());
+                    cropper.getCroppedCanvas().toBlob(function (blob) {
+                        cropper.destroy();
+                        resolve(URL.createObjectURL(blob));
+                    });
+                }
+            });
+        });
+    }
+
     componentDidMount() {
         window.addEventListener("resize", this.updateCalculation);
     }
@@ -132,7 +217,12 @@ class ImageManager extends Component {
     render() {
         return (
             <div className='imageManager'>
-                <div className="imageManager_imageContainer imageContainer">
+                <div ref={this.fader} className='imageManager_fader'>
+                </div>
+                <div
+                    className="imageManager_imageContainer imageContainer"
+                    ref={this.imageContainer}
+                >
                     <div
                         className={"imageContainer_bigOverlay " + (this.state.calculationRun ? "" : "hidden")}
                         ref={this.bigOverlay}
@@ -173,7 +263,7 @@ class ImageManager extends Component {
                         color="primary"
                         className="imageManager_apply"
                         onClick={this.onApplyClick}
-                        disabled={this.state.invalid}
+                        disabled={this.state.invalid || !this.state.calculationRun}
                     >
                         Apply
                     </Button>
